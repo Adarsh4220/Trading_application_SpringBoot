@@ -6,13 +6,16 @@ import com.cryptox.dto.RegisterRequest;
 import com.cryptox.entity.User;
 import com.cryptox.repository.UserRepository;
 import com.cryptox.security.JwtService;
-
+import com.cryptox.entity.Wallet;
+import com.cryptox.repository.WalletRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service
-public class AuthService {
+import java.math.BigDecimal;
 
+        @Service
+public class AuthService {
+    private final WalletRepository walletRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -20,11 +23,13 @@ public class AuthService {
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            JwtService jwtService) {
+            JwtService jwtService,
+            WalletRepository walletRepository) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.walletRepository = walletRepository;
     }
 
     public String register(RegisterRequest request) {
@@ -45,6 +50,15 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+
+        Wallet wallet = Wallet.builder()
+                .user(user)
+                .balance(BigDecimal.ZERO)
+                .build();
+
+        walletRepository.save(wallet);
+
+
 
         return "Registration successful";
     }
