@@ -6,3 +6,6 @@ created login and register
 
 day 3 
 created wallet systems
+
+day 4
+tested all the api with postman 
