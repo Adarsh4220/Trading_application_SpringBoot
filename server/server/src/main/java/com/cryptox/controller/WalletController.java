@@ -1,30 +1,41 @@
 
         package com.cryptox.controller;
 
+import com.cryptox.dto.TransactionResponse;
 import com.cryptox.dto.WalletResponse;
 import com.cryptox.entity.User;
 import com.cryptox.entity.Wallet;
 import com.cryptox.repository.UserRepository;
 import com.cryptox.repository.WalletRepository;
-
+import com.cryptox.dto.DepositRequest;
+import java.math.BigDecimal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.cryptox.entity.Transaction;
+import com.cryptox.entity.TransactionType;
+import com.cryptox.repository.TransactionRepository;
+import java.util.List;
+import java.time.LocalDateTime;
 
-@RestController
+import java.math.BigDecimal;
+
+        @RestController
 @RequestMapping("/api/wallet")
 public class WalletController {
 
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
+            private final TransactionRepository transactionRepository;
+            public WalletController(
+                    UserRepository userRepository,
+                    WalletRepository walletRepository,
+                    TransactionRepository transactionRepository) {
 
-    public WalletController(
-            UserRepository userRepository,
-            WalletRepository walletRepository) {
-
-        this.userRepository = userRepository;
-        this.walletRepository = walletRepository;
-    }
+                this.userRepository = userRepository;
+                this.walletRepository = walletRepository;
+                this.transactionRepository = transactionRepository;
+            }
 
     @GetMapping
     public ResponseEntity<WalletResponse> getWallet(
@@ -48,6 +59,79 @@ public class WalletController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/deposit")
+    public ResponseEntity<WalletResponse> deposit(
+            @RequestBody DepositRequest request,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        Wallet wallet = walletRepository.findByUser(user)
+                .orElseThrow(() ->
+                        new RuntimeException("Wallet not found"));
+
+        if (request.getAmount() == null ||
+                request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+
+            throw new RuntimeException("Amount must be greater than zero");
+        }
+
+        wallet.setBalance(
+                wallet.getBalance().add(request.getAmount())
+        );
+
+        walletRepository.save(wallet);
+        Transaction transaction = Transaction.builder()
+                .user(user)
+                .type(TransactionType.DEPOSIT)
+                .amount(request.getAmount())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        transactionRepository.save(transaction);
+
+        WalletResponse response =
+                new WalletResponse(
+                        wallet.getId(),
+                        wallet.getBalance()
+                );
+
+        return ResponseEntity.ok(response);
+    }
+            @GetMapping("/transactions")
+            public ResponseEntity<List<TransactionResponse>> getTransactions(
+                    Authentication authentication) {
+
+                String email = authentication.getName();
+
+                User user = userRepository.findByEmail(email)
+                        .orElseThrow(() ->
+                                new RuntimeException("User not found"));
+
+                List<Transaction> transactions =
+                        transactionRepository
+                                .findByUserOrderByCreatedAtDesc(user);
+
+                List<TransactionResponse> response =
+                        transactions.stream()
+                                .map(transaction ->
+                                        new TransactionResponse(
+                                                transaction.getId(),
+                                                transaction.getType(),
+                                                transaction.getAmount(),
+                                                transaction.getCreatedAt()
+                                        ))
+                                .toList();
+
+                return ResponseEntity.ok(response);
+            }
+
+
 }
 
 
