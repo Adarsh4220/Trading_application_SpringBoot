@@ -17,7 +17,7 @@ import com.cryptox.entity.TransactionType;
 import com.cryptox.repository.TransactionRepository;
 import java.util.List;
 import java.time.LocalDateTime;
-
+import com.cryptox.dto.WithdrawRequest;
 import java.math.BigDecimal;
 
         @RestController
@@ -127,6 +127,61 @@ public class WalletController {
                                                 transaction.getCreatedAt()
                                         ))
                                 .toList();
+
+                return ResponseEntity.ok(response);
+            }
+            @PostMapping("/withdraw")
+            public ResponseEntity<?> withdraw(
+                    @RequestBody WithdrawRequest request,
+                    Authentication authentication) {
+
+                String email = authentication.getName();
+
+                User user = userRepository.findByEmail(email)
+                        .orElseThrow(() ->
+                                new RuntimeException("User not found"));
+
+                Wallet wallet = walletRepository.findByUser(user)
+                        .orElseThrow(() ->
+                                new RuntimeException("Wallet not found"));
+
+                if (request.getAmount() == null ||
+                        request.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+
+                    return ResponseEntity
+                            .badRequest()
+                            .body("Amount must be greater than zero");
+                }
+
+                if (wallet.getBalance()
+                        .compareTo(request.getAmount()) < 0) {
+
+                    return ResponseEntity
+                            .badRequest()
+                            .body("Insufficient wallet balance");
+                }
+
+                wallet.setBalance(
+                        wallet.getBalance()
+                                .subtract(request.getAmount())
+                );
+
+                walletRepository.save(wallet);
+
+                Transaction transaction = Transaction.builder()
+                        .user(user)
+                        .type(TransactionType.WITHDRAWAL)
+                        .amount(request.getAmount())
+                        .createdAt(LocalDateTime.now())
+                        .build();
+
+                transactionRepository.save(transaction);
+
+                WalletResponse response =
+                        new WalletResponse(
+                                wallet.getId(),
+                                wallet.getBalance()
+                        );
 
                 return ResponseEntity.ok(response);
             }
