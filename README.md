@@ -9,3 +9,7 @@ created wallet systems
 
 day 4
 tested all the api with postman 
+
+
+day 5 
+created transaction history and integrated crypto api to fetc real crypto coins 
