@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -25,6 +27,12 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column
+    private String otp;
+
+    @Column
+    private LocalDateTime otpExpiry;
 
     private boolean twoFactorEnabled;
 }

@@ -5,8 +5,6 @@ import com.cryptox.service.PortfolioService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/portfolio")
 public class PortfolioController {
@@ -18,7 +16,7 @@ public class PortfolioController {
     }
 
     @GetMapping
-    public List<PortfolioResponse> getPortfolio(
+    public PortfolioResponse getPortfolio(
             Authentication authentication) {
 
         String email = authentication.getName();

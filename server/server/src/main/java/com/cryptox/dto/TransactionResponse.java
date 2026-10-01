@@ -14,5 +14,10 @@ public class TransactionResponse {
     private Long id;
     private TransactionType type;
     private BigDecimal amount;
+
+    private String coinId;
+    private BigDecimal cryptoQuantity;
+    private BigDecimal cryptoPrice;
+
     private LocalDateTime createdAt;
 }

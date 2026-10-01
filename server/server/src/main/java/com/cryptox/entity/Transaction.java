@@ -38,4 +38,7 @@ public class Transaction {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(precision = 30, scale = 18)
+    private BigDecimal cryptoPrice;
 }

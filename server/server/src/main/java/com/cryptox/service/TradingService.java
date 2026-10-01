@@ -136,6 +136,7 @@ public class TradingService {
                         .amount(request.getAmount())
                         .coinId(request.getCoinId())
                         .cryptoQuantity(cryptoQuantity)
+                        .cryptoPrice(cryptoPrice)
                         .createdAt(LocalDateTime.now())
                         .build();
 
@@ -238,6 +239,7 @@ public class TradingService {
                         .amount(amountReceived)
                         .coinId(request.getCoinId())
                         .cryptoQuantity(request.getQuantity())
+                        .cryptoPrice(cryptoPrice)
                         .createdAt(LocalDateTime.now())
                         .build();
 

@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 public class PortfolioResponse {
 
-    private String coinId;
-    private BigDecimal quantity;
+    private BigDecimal totalPortfolioValue;
+    private List<PortfolioHoldingResponse> holdings;
 }
