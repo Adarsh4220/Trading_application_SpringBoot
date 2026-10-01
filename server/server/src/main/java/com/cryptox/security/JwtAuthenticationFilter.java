@@ -50,11 +50,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (!jwtService.isTokenValid(token)) {
 
+            System.out.println("JWT TOKEN INVALID");
+
             filterChain.doFilter(request, response);
             return;
         }
 
         String email = jwtService.extractEmail(token);
+        System.out.println("JWT USER: " + email);
 
         if (SecurityContextHolder
                 .getContext()
@@ -78,6 +81,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder
                     .getContext()
                     .setAuthentication(authentication);
+            System.out.println("AUTHENTICATION SET: "
+                    + authentication.getName());
         }
 
         filterChain.doFilter(request, response);

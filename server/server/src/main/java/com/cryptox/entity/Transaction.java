@@ -30,6 +30,12 @@ public class Transaction {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
+    @Column
+    private String coinId;
+
+    @Column(precision = 30, scale = 18)
+    private BigDecimal cryptoQuantity;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 }

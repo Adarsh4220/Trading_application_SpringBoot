@@ -61,6 +61,15 @@ public class CryptoService {
                 .retrieve()
                 .body(CoinDetailsResponse.class);
     }
+    public BigDecimal getCurrentPrice(String coinId) {
+
+        CoinDetailsResponse coin =
+                getCoinDetails(coinId);
+
+        return coin.getMarket_data()
+                .getCurrentPrice()
+                .getUsd();
+    }
     public List<PricePointResponse> getPriceChart(
             String coinId,
             int days) {
