@@ -14,7 +14,7 @@ import java.util.Date;
 public class JwtService {
 
     private final String SECRET_KEY =
-            "CryptoXSecretKeyForJwtAuthentication123456789";
+            System.getenv("JWT_SECRET");
 
     private final long EXPIRATION_TIME =
             1000 * 60 * 60; // 1 hour
