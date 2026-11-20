@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
         import com.cryptox.dto.ResetPasswordRequest;
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:8083")
+@CrossOrigin(origins = "http://localhost:8081")
 public class AuthController {
 
     private final AuthService authService;
